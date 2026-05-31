@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.env
+.venv/
+*.egg-info/
+.worktrees/
+.cltree/
+.DS_Store

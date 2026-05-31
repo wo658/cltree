@@ -1,0 +1,85 @@
+/* xterm.js base styles — @import must be at the very top */
+@import '@xterm/xterm/css/xterm.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * shadcn/ui zinc dark-theme CSS variables.
+ * Built on zinc-950 to blend smoothly with the xterm.js (#000) background.
+ */
+@layer base {
+  :root {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Scrollbar — terminal feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(240 3.7% 25%);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(240 3.7% 35%);
+}
+
+/* Monaco Editor — explain code-line highlight */
+.explain-highlight-line {
+  background: rgba(234, 179, 8, 0.1) !important;
+  border-left: 2px solid rgb(234, 179, 8) !important;
+}
+
+.explain-highlight-glyph {
+  background: rgb(234, 179, 8);
+  width: 3px !important;
+  margin-left: 3px;
+}
+
+.explain-annotation-line {
+  background: rgba(59, 130, 246, 0.08) !important;
+  border-left: 2px solid rgba(59, 130, 246, 0.4) !important;
+}
+
+.explain-annotation-text {
+  color: rgb(96, 165, 250) !important;
+  font-style: italic;
+  opacity: 0.8;
+}
+

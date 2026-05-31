@@ -1,0 +1,39 @@
+1
+00:00:00,001 --> 00:00:02,503
+cltree — CLI-first multi-agent orchestrator
+
+2
+00:00:02,503 --> 00:00:05,047
+Create a workspace
+
+3
+00:00:05,047 --> 00:00:08,211
+Start a session in this directory
+
+4
+00:00:08,211 --> 00:00:11,719
+Spawn a Claude Code agent
+
+5
+00:00:11,719 --> 00:00:15,290
+Add an OpenAI Codex agent — same session
+
+6
+00:00:15,290 --> 00:00:18,291
+Two AI agents, side by side, sharing the same workspace
+
+7
+00:00:18,291 --> 00:00:22,804
+Branch an issue into its own worktree session
+
+8
+00:00:22,804 --> 00:00:26,304
+Issues, worktrees, multiple agents — all in one workspace
+
+9
+00:00:26,304 --> 00:00:29,806
+Same orchestrator. Multiple agents. Real workflows.
+
+10
+00:00:29,806 --> 00:00:32,306
+cltree — open source soon
