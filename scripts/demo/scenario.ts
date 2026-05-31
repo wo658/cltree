@@ -4,9 +4,9 @@
  * Flow:
  *   1. Create and switch to a workspace
  *   2. Create a session
- *   3. Spawn Claude + Codex side by side (one session, two agents)
- *   4. Bring up an Issue View in a GUI Pane
- *   5. Visualize session switching
+ *   3. Spawn a Claude Code agent (left pane)
+ *   4. Open the GitHub issue it is working on as a GUI pane (right pane)
+ *   5. Force a side-by-side (horizontal) layout: Claude Code | Issue
  *
  * Captions are emitted at each action and are auto-serialized to SRT.
  */
@@ -20,6 +20,30 @@ interface ScenarioContext {
   page: Page;
   captions: CaptionRecorder;
 }
+
+/** Mock issue data — rendered by the Issue GUI pane (IssueViewData shape). */
+const DEMO_ISSUE = {
+  number: 42,
+  title: 'Add dark mode toggle to settings',
+  state: 'open' as const,
+  labels: [
+    { name: 'enhancement', color: 'a2eeef' },
+    { name: 'good first issue', color: '7057ff' },
+  ],
+  assignees: ['alice'],
+  body: [
+    '## Summary',
+    'Users want a dark mode toggle in the settings view.',
+    '',
+    '## Acceptance criteria',
+    '- [ ] Toggle control in Settings',
+    '- [ ] Persist the preference',
+    '- [ ] Respect the OS-level color scheme',
+  ].join('\n'),
+  comments: [
+    { author: 'bob', body: 'Happy to review once the toggle is wired up.', createdAt: '2026-05-30T10:00:00Z' },
+  ],
+};
 
 /** Trigger a UI re-render — reload so React picks up the backend state changes. */
 async function refreshUI(page: Page): Promise<void> {
@@ -49,7 +73,7 @@ export async function runScenario(ctx: ScenarioContext): Promise<void> {
 
   // ── 2. Create session (sessionService.switchTo is handled internally) ──
   captions.emit('Start a session in this directory');
-  const sName = 'multi-agent';
+  const sName = 'dark-mode';
   const sRes = await client.cli<{ session: { id: string } }>(
     ['s', 'create', '--name', sName, '--cwd', process.cwd()],
   );
@@ -58,39 +82,49 @@ export async function runScenario(ctx: ScenarioContext): Promise<void> {
   await refreshUI(page);
   await sleep(1500);
 
-  // ── 3-1. Spawn Claude agent (demo dummy: invoking the real claude binary could clash with the current Claude Code session) ──
+  // ── 3. Spawn Claude agent (demo dummy: invoking the real claude binary could clash with the current Claude Code session) ──
   captions.emit('Spawn a Claude Code agent');
-  const claudeMock = `bash -lc 'printf "\\033[1;36m▌ Claude Code\\033[0m (sonnet 4.7)\\n> Connected to cltree session\\n> Awaiting instructions…\\n"; tail -f /dev/null'`;
-  await client.cli(['p', 'spawn', '--session', sessionId, '--cmd', claudeMock]);
+  const claudeMock = `bash -lc 'printf "\\033[1;36m▌ Claude Code\\033[0m (sonnet 4.7)\\n> Connected to cltree session\\n> Working on issue #42 — dark mode toggle…\\n"; tail -f /dev/null'`;
+  const spawnRes = await client.cli<{ pane: { id: string } }>(
+    ['p', 'spawn', '--session', sessionId, '--cmd', claudeMock],
+  );
+  if (!spawnRes.ok || !spawnRes.data?.pane) throw new Error(`spawn failed: ${spawnRes.error}`);
+  const claudePaneId = spawnRes.data.pane.id;
   await refreshUI(page);
   await sleep(2500);
 
-  // ── 3-2. Spawn Codex agent (same session) ──
-  captions.emit('Add an OpenAI Codex agent — same session');
-  const codexMock = `bash -lc 'printf "\\033[1;33m▌ OpenAI Codex\\033[0m (codex-cli 0.39)\\n> Sandbox: workspace-write\\n> Ready.\\n"; tail -f /dev/null'`;
-  await client.cli(['p', 'spawn', '--session', sessionId, '--cmd', codexMock]);
+  // ── 4. Open the GitHub issue as a GUI pane (right side) ──
+  captions.emit('Open the GitHub issue right beside it');
+  const issueGuiId = `gui-issue-${Date.now()}`;
+  const issueSlotId = `slot-issue-${Date.now()}`;
+  await client.cli(['p', 'view-register'], {
+    id: issueGuiId,
+    viewType: 'issue',
+    sessionId,
+    slotId: issueSlotId,
+    meta: DEMO_ISSUE,
+  });
+
+  // ── 5. Force a side-by-side (horizontal) layout: Claude Code | Issue ──
+  // The saved layout is restored verbatim on the next page reload.
+  await client.cli(['layout', 'save', sessionId], {
+    id: `split-${Date.now()}`,
+    type: 'split',
+    direction: 'horizontal',
+    children: [
+      { type: 'leaf', paneId: claudePaneId },
+      { type: 'leaf', paneId: issueGuiId },
+    ],
+    sizes: [55, 45],
+  });
   await refreshUI(page);
-  await sleep(2500);
-
-  captions.emit('Two AI agents, side by side, sharing the same workspace');
   await sleep(3000);
 
-  // ── 4. Worktree branching — issue-driven sub-session ──
-  captions.emit('Branch an issue into its own worktree session');
-  // Real git worktree creation requires a suitable environment. The demo continues even on failure.
-  try {
-    await client.cli(['s', 'create', '--parent', sessionId, '--issue', '42', '--spawn']);
-    await refreshUI(page);
-  } catch {
-    /* worktree demo is optional */
-  }
-  await sleep(3000);
-
-  captions.emit('Issues, worktrees, multiple agents — all in one workspace');
+  captions.emit('Read the issue, drive the agent — side by side');
   await sleep(3500);
 
   // ── 6. Closing ──
-  captions.emit('Same orchestrator. Multiple agents. Real workflows.');
+  captions.emit('One issue → one worktree → one agent. The orchestrator wires it together.');
   await sleep(3500);
 
   captions.emit('cltree — open source soon');

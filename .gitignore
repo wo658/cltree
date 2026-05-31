@@ -8,3 +8,6 @@ dist/
 .worktrees/
 .cltree/
 .DS_Store
+
+# Editor / tool configs
+.claude/

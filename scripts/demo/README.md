@@ -33,7 +33,7 @@ Requirements: macOS / Linux. ffmpeg ships with the npm package `@ffmpeg-installe
 |---|---|
 | `captions.ts` | Caption emit helper — publishes text at action timestamps, serializes to SRT |
 | `api-client.ts` | cltree HTTP API wrapper (POST /api/cli) |
-| `scenario.ts` | Demo scenario (Workspace → Session → Claude+Codex → GUI pane → Worktree) |
+| `scenario.ts` | Demo scenario (Workspace → Session → Claude Code agent + Issue GUI pane, side by side) |
 | `record.ts` | Dev server spawn + Puppeteer recording orchestrator |
 | `postprocess.ts` | ffmpeg subtitles burn-in + palettegen GIF |
 
