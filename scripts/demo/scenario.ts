@@ -79,12 +79,21 @@ export async function runScenario(ctx: ScenarioContext): Promise<void> {
   );
   if (!sRes.ok || !sRes.data?.session) throw new Error(`session create failed: ${sRes.error}`);
   const sessionId = sRes.data.session.id;
+
+  // The session cwd is a git repo, so `s create` auto-creates a default issue-list
+  // GUI pane (gui-<sessionId>). Remove it up front so the demo shows a clean
+  // two-pane split (Claude Code | Issue) instead of an extra empty Issues pane.
+  await client.cli(['p', 'view-unregister', `gui-${sessionId}`]);
+
   await refreshUI(page);
   await sleep(1500);
 
   // ── 3. Spawn Claude agent (demo dummy: invoking the real claude binary could clash with the current Claude Code session) ──
   captions.emit('Spawn a Claude Code agent');
-  const claudeMock = `bash -lc 'printf "\\033[1;36m▌ Claude Code\\033[0m (sonnet 4.7)\\n> Connected to cltree session\\n> Working on issue #42 — dark mode toggle…\\n"; tail -f /dev/null'`;
+  // Re-print on a loop so the pane always shows content: each page reload re-attaches
+  // xterm with an empty screen (there is no scrollback replay), so a one-shot printf
+  // would leave the pane blank. Clearing + repainting every 2s keeps it populated.
+  const claudeMock = `bash -lc 'while true; do printf "\\033[2J\\033[H\\033[1;36m▌ Claude Code\\033[0m (sonnet 4.7)\\n\\n> Connected to cltree session\\n> Working on issue #42 — dark mode toggle\\n\\n  • Add a theme toggle to Settings\\n  • Persist the preference\\n  • Respect the OS color scheme\\n\\n\\033[2m  …working\\033[0m\\n"; sleep 2; done'`;
   const spawnRes = await client.cli<{ pane: { id: string } }>(
     ['p', 'spawn', '--session', sessionId, '--cmd', claudeMock],
   );

@@ -68,6 +68,12 @@ async function main(): Promise<void> {
     const page = await browser.newPage();
     await page.setViewport({ width: VIDEO_WIDTH, height: VIDEO_HEIGHT });
 
+    // Force xterm's DOM renderer instead of WebGL — puppeteer screenshots cannot
+    // capture the WebGL canvas (terminal panes would record as solid black).
+    await page.evaluateOnNewDocument(() => {
+      (window as unknown as { __CLTREE_NO_WEBGL__?: boolean }).__CLTREE_NO_WEBGL__ = true;
+    });
+
     console.log(`▶ Navigating to ${BASE_URL}…`);
     try {
       await page.goto(BASE_URL, { waitUntil: 'networkidle2', timeout: 30_000 });
