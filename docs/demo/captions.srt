@@ -1,39 +1,31 @@
 1
-00:00:00,001 --> 00:00:02,503
+00:00:00,000 --> 00:00:02,501
 cltree — CLI-first multi-agent orchestrator
 
 2
-00:00:02,503 --> 00:00:05,047
+00:00:02,501 --> 00:00:04,953
 Create a workspace
 
 3
-00:00:05,047 --> 00:00:08,211
+00:00:04,953 --> 00:00:08,021
 Start a session in this directory
 
 4
-00:00:08,211 --> 00:00:11,719
+00:00:08,021 --> 00:00:11,425
 Spawn a Claude Code agent
 
 5
-00:00:11,719 --> 00:00:15,290
-Add an OpenAI Codex agent — same session
+00:00:11,425 --> 00:00:15,375
+Open the GitHub issue right beside it
 
 6
-00:00:15,290 --> 00:00:18,291
-Two AI agents, side by side, sharing the same workspace
+00:00:15,375 --> 00:00:18,877
+Read the issue, drive the agent — side by side
 
 7
-00:00:18,291 --> 00:00:22,804
-Branch an issue into its own worktree session
+00:00:18,877 --> 00:00:22,378
+One issue → one worktree → one agent. The orchestrator wires it together.
 
 8
-00:00:22,804 --> 00:00:26,304
-Issues, worktrees, multiple agents — all in one workspace
-
-9
-00:00:26,304 --> 00:00:29,806
-Same orchestrator. Multiple agents. Real workflows.
-
-10
-00:00:29,806 --> 00:00:32,306
+00:00:22,378 --> 00:00:24,879
 cltree — open source soon

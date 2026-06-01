@@ -6,9 +6,9 @@ CLI-first multi-agent orchestrator. PTY management via node-pty + React/xterm.js
 
 ## Demo
 
-![cltree demo — workspace → session → Claude + Codex agents → GUI panes → worktree](docs/demo/demo.gif)
+![cltree demo — workspace → session → Claude Code agent + GitHub issue GUI pane, side by side](docs/demo/demo.gif)
 
-> A workspace, a session, two AI agents (Claude + Codex) running side by side, GitHub issues as a GUI pane, and an issue branched into its own worktree session — all in a single orchestrator.
+> A workspace, a session, a Claude Code agent on the left and the GitHub issue it is working on as a GUI pane on the right — side by side in a single orchestrator.
 
 Higher-quality MP4: [`docs/demo/demo.mp4`](docs/demo/demo.mp4) · English captions: [`docs/demo/captions.srt`](docs/demo/captions.srt) · Re-record with `pnpm demo` (see [`scripts/demo/README.md`](scripts/demo/README.md))
 

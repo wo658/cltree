@@ -4,9 +4,9 @@ CLI-first multi-agent 오케스트레이터. node-pty 기반 PTY 관리 + React/
 
 ## 데모
 
-![cltree 데모 — workspace → session → Claude + Codex agents → GUI panes → worktree](docs/demo/demo.gif)
+![cltree 데모 — workspace → session → Claude Code 에이전트 + GitHub 이슈 GUI pane, 나란히](docs/demo/demo.gif)
 
-> 하나의 워크스페이스, 하나의 세션에서 Claude + Codex 두 AI 에이전트를 동시에 띄우고, GitHub 이슈를 GUI pane으로 보여주고, 이슈를 워크트리 서브세션으로 분기 — 모두 단일 오케스트레이터 안에서.
+> 하나의 워크스페이스, 하나의 세션에서 왼쪽엔 Claude Code 에이전트, 오른쪽엔 그 에이전트가 작업 중인 GitHub 이슈를 GUI pane으로 — 단일 오케스트레이터 안에서 나란히.
 
 고화질 MP4: [`docs/demo/demo.mp4`](docs/demo/demo.mp4) · 영문 자막: [`docs/demo/captions.srt`](docs/demo/captions.srt) · `pnpm demo` 로 재녹화 가능 ([`scripts/demo/README.md`](scripts/demo/README.md) 참고)
 
