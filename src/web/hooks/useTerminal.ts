@@ -76,16 +76,21 @@ export function useTerminal(paneId: string, _paneType: PaneType = 'terminal') {
       terminal.open(el);
       fitAddon.fit();
 
-      // WebGL accelerated rendering (when supported)
-      try {
-        const webglAddon = new WebglAddon();
-        webglAddon.onContextLoss(() => {
-          console.warn(`[useTerminal] WebGL context loss paneId=${paneId}`);
-          webglAddon.dispose();
-        });
-        terminal.loadAddon(webglAddon);
-      } catch {
-        // Fallback to canvas when WebGL is not supported
+      // WebGL accelerated rendering (when supported).
+      // The demo recorder sets window.__CLTREE_NO_WEBGL__ so xterm falls back to the
+      // DOM renderer — puppeteer screenshots cannot capture the WebGL canvas (it shows
+      // up black), so the recording would otherwise have empty terminal panes.
+      if (!(window as unknown as { __CLTREE_NO_WEBGL__?: boolean }).__CLTREE_NO_WEBGL__) {
+        try {
+          const webglAddon = new WebglAddon();
+          webglAddon.onContextLoss(() => {
+            console.warn(`[useTerminal] WebGL context loss paneId=${paneId}`);
+            webglAddon.dispose();
+          });
+          terminal.loadAddon(webglAddon);
+        } catch {
+          // Fallback to canvas when WebGL is not supported
+        }
       }
 
       // 🔍 Track buffer changes (alternate screen, etc.)
@@ -162,6 +167,16 @@ export function useTerminal(paneId: string, _paneType: PaneType = 'terminal') {
       fitAddonRef.current = null;
     };
   }, [paneId]);
+
+  // Recreate after a cleanup that left the container mounted. React StrictMode (dev)
+  // runs effect cleanup then re-runs setup WITHOUT re-invoking the callback ref, so the
+  // terminal disposed above is otherwise never recreated and the pane renders blank.
+  // This effect re-runs on the StrictMode remount and rebuilds the disposed instance.
+  useEffect(() => {
+    if (containerRef.current && !terminalRef.current) {
+      attachToContainer(containerRef.current);
+    }
+  }, [paneId, attachToContainer]);
 
   return { attachToContainer };
 }
