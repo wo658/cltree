@@ -13,6 +13,8 @@ class WsClient {
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectDelay = 1000;
   private maxReconnectDelay = 16000;
+  /** Messages sent before the socket is OPEN — flushed on connect. */
+  private pendingQueue: WsClientMessage[] = [];
 
   /** Start connection */
   connect(url?: string) {
@@ -32,10 +34,15 @@ class WsClient {
     }
   }
 
-  /** Send a message to the server */
+  /** Send a message to the server (queued until the socket is OPEN). */
   send(msg: WsClientMessage) {
     if (this.ws?.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(msg));
+    } else {
+      // Not connected yet (e.g. right after a page reload). Queue and flush on open
+      // so control messages like `subscribe` / `pty-replay` are not silently lost —
+      // otherwise terminals stay blank because the ring-buffer replay never fires.
+      this.pendingQueue.push(msg);
     }
   }
 
@@ -55,6 +62,12 @@ class WsClient {
 
     this.ws.onopen = () => {
       this.reconnectDelay = 1000;
+      // Flush any messages queued while the socket was connecting.
+      const pending = this.pendingQueue;
+      this.pendingQueue = [];
+      for (const msg of pending) {
+        this.ws?.send(JSON.stringify(msg));
+      }
     };
 
     this.ws.onmessage = (event) => {
