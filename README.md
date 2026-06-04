@@ -1,8 +1,12 @@
 # cltree
 
-CLI-first multi-agent orchestrator. PTY management via node-pty + React/xterm.js web rendering.
+**Run multiple AI coding agents — Claude Code, Codex, Gemini — side by side, each in its own git worktree, all from one CLI.**
 
-[한국어 문서](README.ko.md)
+Stop juggling a wall of terminal tabs. `cltree` is a CLI-first orchestrator: one process manages every agent, pins each to its own branch/worktree, and lets agents call the same CLI as a tool. The web UI is just a live window into that state — it owns no logic. Real PTYs via node-pty, rendering via xterm.js.
+
+[한국어 문서](README.ko.md) · MIT · early (v0.1)
+
+
 
 ## Demo
 
